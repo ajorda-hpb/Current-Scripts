@@ -4,7 +4,7 @@
 ---------------------------------------------------------------------
 -- Manually define the setID for the current suggested orders 
 -- (e.g.if there's a later/experimental set between now and the most recent actual set)
-declare @setID int = 44 --(select max(SetID) from ReportsView..SuggOrds_OrigOrders)  --
+declare @setID int = 51 --(select max(SetID) from ReportsView..SuggOrds_OrigOrders)  --
 -- ...or just pull the most recent/biggest setID:
 -- select * from ReportsView..SuggOrds_Params order by SetID desc
 -- declare @setID int = (select max(SetID) from ReportsView..SuggOrds_OrigOrders)
@@ -202,6 +202,7 @@ drop table if exists #staging
         ,ss.Cap
         ,ss.Secn
         ,ss.DefaultScheme[SecnSchID]
+        ,po.SpecialInstructions[SpecInstr]
 		,coalesce(nullif(pm.ISBN,''),nullif(pm.UPC,''),it.ITEM_STYLE collate database_default)[ISBN/UPC]
 		,it.DESCRIPTION[Title]
         ,it.USER_DEF4[Cost]
@@ -235,6 +236,7 @@ drop table if exists #staging
 	from #unduped pl
         left join WMS_ILS..item it on pl.item = it.item
 		left join ReportsView..vw_DistributionProductMaster pm on right('00000000000000000000'+pl.item,20) collate database_default = pm.ItemCode
+        left join ReportsData..OrderDetail po on pm.ItemCode = po.ItemCode and left(pl.Notes1,6) collate database_default = po.PONumber
 		left join ReportsView..ngXacns_Items ng with(nolock) on pm.ItemCode = ng.ItemCode
 		left join ReportsView..hroXacns_Items hr with(nolock) on pm.ItemCode = hr.ItemCode
         left join ReportsView..ProdGoals_ItemMaster pg with(nolock) on pg.ItemCode = pm.ItemCode
@@ -258,7 +260,7 @@ from moar mr
 -- SuggOrds data from most recent set----
 
 truncate table ReportsView.dbo.Pipeline
---   declare @setID int = 44 declare @OoS_setID int = 36 --(select * from ReportsView..SuggOrds_Params)
+--   declare @setID int = 51 declare @OoS_setID int = 36 --(select * from ReportsView..SuggOrds_Params)
 ;with SuggOrds as(
     select RptIt
         ,cast(sum(      case when SetID = @SetID then OrderQty else 0 end) as int)[SuggOrdQty]
@@ -281,6 +283,7 @@ select right(concat('00000000000000000000',cast(f.Item as varchar(20))),20) coll
     ,f.RordGrp[Prog]
     ,f.RordVendor,f.Cap,f.Secn
     ,f.SecnSchID
+    ,f.SpecInstr
     ,f.[ISBN/UPC]
     ,f.Title,f.Cost,f.Price
     ,f.Qty,f.OrigSchQ,f.SecnSchQ
