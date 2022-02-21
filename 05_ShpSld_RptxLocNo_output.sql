@@ -344,6 +344,7 @@ drop table if exists #ReopenWks
 create table #ReopenWks(DistrictName varchar(20), ReopWk int)
 insert into #ReopenWks values ('Arizona',20),('Austin',19),('California',23),('Chicago',23),('Columbus',20),('Dallas South',19),('Georgia',20),('Houston North',19),('Houston South',19),('Indiana',20),('Iowa/Nebraska',20),('Kansas',20),('Kentucky',21),('Minnesota',21),('North Texas',19),('Oklahoma',19),('Penn-Cleveland',20),('San Antonio',19),('Southern Ohio',20),('St. Louis',21),('Washington',23),('Wisconsin',21)
 
+drop table if exists #WkMinDts
 select Wk,minDt
 into #WkMinDts
 from #ssd
