@@ -342,7 +342,10 @@ order by Src,minDt
 
 drop table if exists #ReopenWks
 create table #ReopenWks(DistrictName varchar(20), ReopWk int)
-insert into #ReopenWks values ('Arizona',20),('Austin',19),('California',23),('Chicago',23),('Columbus',20),('Dallas South',19),('Georgia',20),('Houston North',19),('Houston South',19),('Indiana',20),('Iowa/Nebraska',20),('Kansas',20),('Kentucky',21),('Minnesota',21),('North Texas',19),('Oklahoma',19),('Penn-Cleveland',20),('San Antonio',19),('Southern Ohio',20),('St. Louis',21),('Washington',23),('Wisconsin',21)
+insert into #ReopenWks values ('Arizona',20),('Austin',19),('California',23),('Chicago',23),('Columbus',20),('Dallas South',19)
+	,('Georgia',20),('Houston North',19),('Houston South',19),('Indiana',20),('Iowa/Nebraska',20),('Kansas',20)
+	,('Kentucky',21),('Minnesota',21),('North Texas',19),('Oklahoma',19),('Penn-Cleveland',20),('San Antonio',19)
+	,('Southern Ohio',20),('St. Louis',21),('Washington',23),('Wisconsin',21),('Dallas North',19),('Tarrant',19)
 
 drop table if exists #WkMinDts
 select Wk,minDt
@@ -361,7 +364,7 @@ select lm.RegionName
 	,wd.minDt[ReopMinDt]
 into #LocReopWks
 from MathLab..StoreLocationMaster lm with(nolock)
-    inner join #ReopenWks rw on lm.DistrictName = rw.DistrictName
+    left join #ReopenWks rw on lm.DistrictName = rw.DistrictName
 	inner join #WkMinDts wd on rw.ReopWk = wd.Wk
 where LocationNo not in ('00011','00020','00027','00028','00042','00052','00060','00063','00079','00089','00092','00093','00101','00106')
     and LocationNo < '00200'
