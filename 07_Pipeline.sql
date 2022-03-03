@@ -4,7 +4,7 @@
 ---------------------------------------------------------------------
 -- Manually define the setID for the current suggested orders 
 -- (e.g.if there's a later/experimental set between now and the most recent actual set)
-declare @setID int = 51 --(select max(SetID) from ReportsView..SuggOrds_OrigOrders)  --
+declare @setID int = (select max(SetID) from ReportsView..SuggOrds_OrigOrders)  --51 --
 -- ...or just pull the most recent/biggest setID:
 -- select * from ReportsView..SuggOrds_Params order by SetID desc
 -- declare @setID int = (select max(SetID) from ReportsView..SuggOrds_OrigOrders)
@@ -260,7 +260,7 @@ from moar mr
 -- SuggOrds data from most recent set----
 
 truncate table ReportsView.dbo.Pipeline
---   declare @setID int = 51 declare @OoS_setID int = 36 --(select * from ReportsView..SuggOrds_Params)
+--   declare @setID int = (select max(SetID) from ReportsView..SuggOrds_OrigOrders) declare @OoS_setID int = 36 --(select * from ReportsView..SuggOrds_Params)
 ;with SuggOrds as(
     select RptIt
         ,cast(sum(      case when SetID = @SetID then OrderQty else 0 end) as int)[SuggOrdQty]
