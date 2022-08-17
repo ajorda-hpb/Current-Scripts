@@ -3,12 +3,20 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE procedure [dbo].[ShpSld_BI_UPDATE]
+CREATE or ALTER procedure [dbo].[ShpSld_BI_UPDATE]
+
+-- Add the parameters for the stored procedure here
+@ends datetime
+
 as
 SET XACT_ABORT, NOCOUNT ON;
 
--- Run the complete past week, Sunday - Sunday(excl)
-declare @ends datetime = cast(dateadd(DD,-DATEPART(Weekday,getdate())+1,getdate()) as date)
+-- declare @ends datetime = cast(dateadd(DD,-DATEPART(Weekday,getdate())+1,getdate()) as date)
+
+-- Run the complete past week, Sunday - Sunday(excl) if @ends is specifically defined.
+if @ends is null begin
+	set @ends = cast(dateadd(DD,-DATEPART(Weekday,getdate())+1,getdate()) as date)
+end 
 select dateadd(DD,-7,@ends)[StartDate],@ends[EndDate]
 
 ----Set start & end dates
